@@ -1,4 +1,5 @@
-// The toy airport's airside kit, built to the reference video's look: toy proportions, generous bevels, matte paint with a soft clearcoat, crisp
+// The toy airport's airside kit, built to the reference video
+//: toy proportions, generous bevels, matte paint with a soft clearcoat, crisp
 // printed liveries and numbers, blue + white on lavender. Every colour and material comes from ./style.js; the few
 // colours style.js lacks are in AIRSIDE below, sampled from the reference frames. Toy metres, y up.
 //
@@ -1023,7 +1024,7 @@ function roofSheet(K, matRoof, ax, ay, bx, by, z0, z1, {t = 0.32, pitch = 0.92, 
 }
 
 // ================================================================================================ the cargo terminal
-export function buildToyCargoTerminal({docks = 6, stock = true} = {}) {
+export function buildToyCargoTerminal({docks = 6, stock = true, name = 'CARGO C', sign = ['AURORA CARGO', 'Cross-dock  ·  Apron C']} = {}) {
   const M = mats();
   const P = 10; // dock pitch
   const margin = 6;
@@ -1114,13 +1115,13 @@ export function buildToyCargoTerminal({docks = 6, stock = true} = {}) {
     group.add(m);
   });
   const sx = docks >= 3 ? (dockX[1] + dockX[2]) / 2 : dockX[0] + P / 2;
-  const sign = signTex('AURORA CARGO', 'Cross-dock  ·  Apron C');
-  const sw = sign.aspect * 1.6;
+  const signT = signTex(sign[0], sign[1]);
+  const sw = signT.aspect * 1.6;
   const sp = new THREE.Mesh(rbox(sw + 0.1, 1.7, 0.18, 0.08), M.white);
   sp.position.set(sx, DH + 3.1, 0.12);
   sp.castShadow = sp.receiveShadow = true;
   group.add(sp);
-  const sg = decal(sign.tex, sign.aspect, 1.6);
+  const sg = decal(signT.tex, signT.aspect, 1.6);
   sg.position.set(sx, DH + 3.1, 0.22);
   group.add(sg);
   const box = new THREE.Mesh(rbox(5.2, 1.3, 0.3, 0.12), M.blueDeep);
@@ -1139,7 +1140,7 @@ export function buildToyCargoTerminal({docks = 6, stock = true} = {}) {
   logo.position.copy(onSlope(-D / 2 - 2.5, 0.16));
   logo.quaternion.copy(slopeQ);
   group.add(logo);
-  const lt = plate('CARGO C', {bg: null, fg: '#ffffff', px: 110, h: 150, padX: 0.1});
+  const lt = plate(name, {bg: null, fg: '#ffffff', px: 110, h: 150, padX: 0.1});
   const ltm = decal(lt.tex, lt.aspect, 2.0);
   ltm.position.copy(onSlope(-D / 2 + 3.6, 0.16));
   ltm.quaternion.copy(slopeQ);

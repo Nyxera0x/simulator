@@ -1,15 +1,45 @@
-# simulator
+<h1 align="center">simulator</h1>
 
-A Claude Code skill that rebuilds any industry as a live simulator, in the format of a simulator video that already
-worked.
+<p align="center"><b>Any industry as a live simulator you can watch run itself.</b><br>
+A Claude Code skill. Every model, every machine and every frame is code.</p>
 
-Point it at a reference video. Claude takes it apart into rules (the camera, the scale, the palette, the interface,
-the selection marks), splits the models between 2 subagents with one brief, and builds your system to those rules as
-one offline HTML page: a toy-scale isometric map where every vehicle works on one clock, one item followed from the
-first second to the last, a product UI over the map, one camera that only pans and zooms. Then it sweeps the whole
-film for collisions and records it frame by frame into a 60 fps video with sound on every action.
+<p align="center"><img src="docs/hero.gif" alt="Four simulators: an airport, a car plant, a construction site and a warehouse network" width="100%"></p>
 
-![Rampline: a tug tows a container from stand B12 to Cargo C](docs/airport.gif)
+<p align="center">
+<b>4 systems inside</b> &nbsp;·&nbsp; <b>64 models built by subagents</b> &nbsp;·&nbsp; <b>13,700 lines</b> &nbsp;·&nbsp; <b>no 3D files, no downloads</b>
+</p>
+
+---
+
+## What it makes
+
+You name a system. Claude builds the whole operation as one offline HTML page: a toy-scale isometric world where every
+vehicle works on one clock, one item followed from the first second to the last, a product app over the map, one
+camera that pans and zooms like a person with a mouse. Then it checks that nothing drives through anything and
+records the page frame by frame into a 60 fps film with a sound on every action.
+
+<table>
+<tr>
+<td width="50%"><img src="docs/airport.gif" alt="Rampline: a tug tows a container to the cargo terminal"><br><b>Rampline</b> · an airport<br><sub>A container leaves the hold on a high loader, rides a tug train to Cargo C and goes in on a forklift. Pushback, catering, a taxi out.</sub></td>
+<td width="50%"><img src="docs/plant.gif" alt="Plantline: robots weld a car body in cell C4"><br><b>Plantline</b> · a car plant<br><sub>Four robots weld a body in cell C4. It rides to the paint booth, gets its wheels, seats and glass, passes the rolling road and drives onto a carrier.</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/site.gif" alt="Buildline: a mixer truck pours the foundation slab"><br><b>Buildline</b> · a construction site<br><sub>The pit digs itself, a dozer levels the floor, the rebar rolls out, a mixer from the batching plant backs down the ramp and the slab spreads from its chute.</sub></td>
+<td width="50%"><img src="docs/warehouse.gif" alt="Stockline: a box truck docks and a forklift unloads it"><br><b>Stockline</b> · a warehouse network<br><sub>A truck loads at Harbor Hub, drives to the cross-dock, reverses into In 3 and a forklift unloads it. The site switcher jumps to the cold store.</sub></td>
+</tr>
+</table>
+
+## The 5 rules every simulator follows
+
+| | |
+|---|---|
+| **One camera** | One angle for the whole film. It only pans and zooms. No cuts. |
+| **Toy scale** | A forklift nearly as tall as the dock door. Big simple shapes, generous bevels, nothing sharp. |
+| **Two colours** | Blue and white on a lavender ground. Yellow only on the working machines. |
+| **Real software on top** | A site switcher with a dropdown, live cards, a tracker, a fleet table. Every number reads from the scene. |
+| **Game-style selection** | A wireframe box round the vehicle you clicked, a glow under it, its route drawn on the ground. |
+
+<p align="center"><img src="docs/airport_dropdown.gif" alt="The site switcher's dropdown jumps to another stand" width="80%"></p>
 
 ## Install
 
@@ -23,45 +53,54 @@ Then, once, in the installed folder:
 npm install && npx playwright install chromium
 ```
 
-You need Node.js 20 or newer. For the video you also need `ffmpeg`, and for the sound Python 3. An ElevenLabs key is
-optional: without it the film carries the action sounds and the ambience.
+Node.js 20 or newer. `ffmpeg` for the video, Python 3 for the sound. An ElevenLabs key is optional: without it the
+films get a calm code bed under their action sounds.
 
 ## Use
 
 Type `/simulator` in Claude Code, or ask in plain words:
 
-> Take this simulator video apart and rebuild a container port in its format. Follow one box from the ship to the stack.
+> Take this video apart and rebuild a parcel hub in its format. Follow one parcel from the truck to the van.
 
-> Build a car plant as a live simulator in the airport's style: one body from the press to the truck, 50 seconds.
+> Build a pizza factory as a live simulator in the airport's style: one order from the dough to the scooter.
 
-> Make a robot warehouse simulator. Follow one order from the shelf to the truck.
+> Make a bakery line simulator. Follow one tray from the oven to the delivery truck.
 
-Or open the example first:
+Or open an example first:
 
 ```
-node sims/build.mjs airport-film        # simulator-out/dist/airport-film.html
+node sims/build.mjs warehouse-film       # simulator-out/dist/warehouse-film.html, open it in a browser
+node sims/capture.mjs warehouse-film --size 1600x900 --dpr 1.2 --out simulator-out/warehouse.mp4
 ```
 
-![The site switcher's dropdown jumps to stand B11 for a pushback](docs/airport_dropdown.gif)
+## How a new system gets built
+
+1. **Pin the look down.** Frames from a video with the look you want, colours sampled with ffmpeg, the interface
+   measured panel by panel. Rules, no opinions.
+2. **Brief 2 subagents.** One file with the frames, the palette and a scale contract both kits must meet (door sills,
+   deck heights). One builds the buildings, one the vehicles. Template: [`docs/BRIEF.md`](docs/BRIEF.md).
+3. **Write the day as a function of time.** One hero item's timetable, every vehicle on a path by distance. Render
+   any second out of order and it looks the same.
+4. **Direct it like a user.** One angle, eased glides between sites, clicks that open the detail card, a dropdown
+   for the site switch.
+5. **Sweep for collisions.** Every 0.1 s, oriented boxes from each body's own geometry. Fix the paths until it
+   reports nothing.
+6. **Score it and render it.** Sounds on the same timetable, real CC0 ambience, 60 fps frame by frame.
 
 ## What is inside
 
 | | |
 |---|---|
-| `SKILL.md` | What Claude reads: taking a reference apart, the brief, the light, the UI overlay, the day as a function of time, the camera, the collision sweep, sound and render. |
-| `docs/BRIEF.md` | The brief the 2 model subagents worked from, as a template. |
-| `sims/airport-shared/` | Rampline: a jet in 2 liveries, a pier with jet bridges, a cargo terminal, 15 ground vehicles, the product UI, the selection marks, the director, the score. |
-| `sims/airport-film/` | The film's entry point and its timeline. |
-| `sims/airport-collide/` | The collision sweep: every 0.1 s, every pair of bodies. |
-| `sims/airport-look/` | A free camera on the world for close-up checks. |
-| `sims/kit/` | Runtime and stage helpers. |
-| `sims/build.mjs` | Bundles a system into one HTML file, three.js and fonts inlined. |
-| `sims/capture.mjs` | Renders the film frame by frame to a 60 fps mp4, or review sheets of stills. |
-| `sfx/`, `run_sfx.py` | Procedural sound on the film's timeline, mastered to -14 LUFS. |
-| `tools/music.py` | The final mix: an ElevenLabs track (optional), the action sounds, real ambience. |
-| `tools/sfx_fetch.py` | Real CC0 recordings from Openverse for the ambience, with credits. |
-
-Every model is code. There is no 3D file and nothing to download.
+| `SKILL.md` | What Claude reads: the whole method, the render(t) contract, the review loop. |
+| `docs/BRIEF.md` | The brief the model subagents work from, as a template. |
+| `sims/airport-shared/` | Rampline, plus the shared look: palette, materials, stage, the product UI, selection marks, thumbnails. |
+| `sims/plant-shared/` | Plantline: robot arms with IK, a car body that builds in stages, conveyors, a press, a paint booth, a rolling road, the hall, AGVs, a car carrier. |
+| `sims/site-shared/` | Buildline: an excavator with IK, a tipper, a mixer, a dozer, a loader, a roller; a pit that digs itself, rebar, formwork, a slab that pours, blockwork. |
+| `sims/warehouse-shared/` | Stockline: three warehouses, docks, trucks, forklifts, staging rows, chargers. |
+| `sims/*-film/` | Each film's entry point and timeline. |
+| `sims/*-collide/` | Each system's collision sweep. |
+| `sims/build.mjs`, `sims/capture.mjs` | Bundle a system into one HTML file; render it to a 60 fps mp4 or review sheets. |
+| `sfx/`, `run_sfx.py`, `tools/` | Procedural sound on the timeline, the final mix with music and ambience, CC0 recordings from Openverse. |
 
 ## License
 

@@ -1,9 +1,9 @@
-// The toy airport's product UI, laid out after the reference's frame for frame: a 74 px top bar (cube logo, search, the site switcher with its dropdown, live clock, bell,
+// The toy airport's product UI, laid out after the reference frame for frame: a 74 px top bar (cube logo, search, the site switcher with its dropdown, live clock, bell,
 // operator), three big KPI cards, a zoom/rotate tool column, a detail card with the object's thumbnail and three
 // buttons, the turnaround tracker with icon steps and a shipment card, the fleet table with a segmented control,
 // map pins, a dark selection pill, the cursor. Sizes are the reference's proportions at a 1600 x 900 CSS frame.
 // update(state) fills it; nothing here moves the scene.
-import {OPERATOR_AVATAR} from './avatar.js';
+import {OPERATOR_AVATAR} from '../airport-shared/avatar.js';
 
 const B = '#3166ea';
 const CSS = `
@@ -16,7 +16,7 @@ const CSS = `
 .wt .sw{margin-left:auto;display:flex;align-items:stretch;height:48px;border:1px solid #dfe4ef;border-radius:12px;background:#fff;overflow:hidden}
 .wt .sw .main{display:flex;align-items:center;gap:10px;padding:0 12px 0 7px;font-size:14px;font-weight:700;width:262px}
 .wt .sw .main small{display:block;font-size:12px;font-weight:500;color:#6f7891;margin-top:1px}
-.wt .sw .chip{width:42px;height:34px;border-radius:8px;background:${B};color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)}
+.wt .sw .chip{min-width:42px;padding:0 6px;white-space:nowrap;height:34px;border-radius:8px;background:${B};color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)}
 .wt .sw .gt{margin-left:auto;color:#9aa2b6;font-size:15px}
 .wt .sw .dd{width:40px;border-left:1px solid #e6eaf3;display:grid;place-items:center}
 .wt .sw .dd.on{background:#eef3ff}
@@ -58,6 +58,23 @@ const CSS = `
 .wt .det .rw:last-child{border:0}
 .wt .det .rw span:first-child{color:#4b5570}.wt .det .rw span:last-child{font-weight:600}
 .wt .det .rw .ln{color:${B}}
+.wt .det .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.wt .det .sb{background:#f4f6fb;border-radius:10px;padding:8px 10px}
+.wt .det .sb small{display:block;font-size:11px;color:#4b5570}
+.wt .det .sb b{display:block;font-size:15px;font-weight:800;margin:1px 0 4px}
+.wt .det .sb b em{font-style:normal;font-size:12px;color:#6f7891;font-weight:600}
+.wt .det .sb .pb{height:4px;border-radius:3px;background:#e2e7f2;overflow:hidden}.wt .det .sb .pb i{display:block;height:100%;background:${B}}
+.wt .det .sb .pb.g i{background:#22b35f}
+.wt .det .ih{display:flex;justify-content:space-between;font-size:11.5px;font-weight:800;color:#0f1730;margin-top:12px}.wt .det .ih span{color:#6f7891;font-weight:600}
+.wt .det .iv{display:grid;grid-template-columns:26px 1fr 54px 76px;align-items:center;gap:8px;font-size:12.5px;padding:6px 0;border-bottom:1px solid #eef1f6}
+.wt .det .iv:last-child{border:0}
+.wt .det .iv i{width:24px;height:24px;border-radius:7px;display:grid;place-items:center}
+.wt .det .iv b{font-weight:700;text-align:right}
+.wt .det .iv .tg{font-size:11.5px;font-weight:700;border-radius:7px;padding:3px 8px;text-align:center}
+.wt .det .fl{margin-top:10px;border-top:1px solid #eef1f6;padding-top:8px}
+.wt .det .fl .fh{display:flex;justify-content:space-between;font-size:11.5px;font-weight:800}.wt .det .fl .fh span{color:#6f7891;font-weight:600}
+.wt .det .fl .fr{display:grid;grid-template-columns:48px 1fr 60px 30px;gap:8px;align-items:center;font-size:12px;margin-top:6px}
+.wt .det .fl .fr b{font-weight:800}.wt .det .fl .fr .pb{height:5px;border-radius:3px;background:#e9edf5;overflow:hidden}.wt .det .fl .fr .pb i{display:block;height:100%;background:#22b35f}
 .wt .trk{left:34px;bottom:30px;width:958px;height:136px;padding:16px 20px;display:flex;gap:18px}
 .wt .trk .l{flex:1}
 .wt .trk .hd{display:flex;align-items:center;gap:10px;font-size:15.5px;font-weight:800}
@@ -125,12 +142,25 @@ const STEP_IC = {
   plane: sv('<path d="M3 13l7-1 4-7h2l-1 7 5 1 1-2h2l-1 3 1 3h-2l-1-2-5 1 1 7h-2l-4-7-7-1z"/>', 16, '#fff', 1.8),
 };
 const greyIc = (k) => STEP_IC[k].replace(/stroke="#fff"/, 'stroke="#9aa2b6"');
+// inventory glyphs: small solid shapes, the reference's language
+const INV_BG = {box: '#fbefdc', bin: '#e6eeff', helmet: '#fff1d6', tape: '#fbefdc', frozen: '#e9f6ff', water: '#e6eeff', gloves: '#e6eeff', pallet: '#fbefdc'};
+const INV = {
+  box: '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" fill="#d9a35f"/><path d="M4 7.5l8 4.5 8-4.5L12 3z" fill="#ecc28a"/><path d="M12 12v9" stroke="#b9853f" stroke-width="1.2"/></svg>',
+  bin: '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 8h16l-1.6 11H5.6z" fill="#3166ea"/><rect x="3" y="5" width="18" height="4" rx="1.5" fill="#6f98f7"/></svg>',
+  helmet: '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 16a8 8 0 0116 0z" fill="#f2b33a"/><rect x="2.5" y="15.5" width="19" height="3" rx="1.5" fill="#d9952a"/></svg>',
+  tape: '<svg viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="8" fill="#d9a35f"/><circle cx="12" cy="12" r="3.4" fill="#fbefdc"/></svg>',
+  frozen: '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v18M4.5 7.5l15 9M19.5 7.5l-15 9" stroke="#3b8fe0" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  water: '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 3c4 5 6 8 6 11a6 6 0 01-12 0c0-3 2-6 6-11z" fill="#3166ea"/></svg>',
+  gloves: '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M7 21V9a1.5 1.5 0 013 0V5a1.5 1.5 0 013 0v4a1.5 1.5 0 013 0v2a1.5 1.5 0 013 0v5a5 5 0 01-5 5z" fill="#3166ea"/></svg>',
+  pallet: '<svg viewBox="0 0 24 24" width="16" height="16"><rect x="4" y="5" width="16" height="11" rx="1.5" fill="#d9a35f"/><rect x="3" y="17" width="18" height="3" rx="1" fill="#b9853f"/></svg>',
+};
 const CURSOR = '<svg viewBox="0 0 24 24" width="26" height="26"><path d="M5 2.5l14.5 8.6-6.6 1.8-3 6.6z" fill="#0f1730" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>';
 const HAND = '<svg viewBox="0 0 24 24" width="26" height="26"><path d="M9 11V4.5a1.5 1.5 0 013 0V10m0-1.5a1.5 1.5 0 013 0V11m0-1a1.5 1.5 0 013 0v5c0 3.5-2.5 6-6 6h-1c-2.6 0-4-1.3-5.3-3.2L4.6 14.4a1.6 1.6 0 012.6-1.8L9 14.5" fill="#fff" stroke="#0f1730" stroke-width="1.6" stroke-linejoin="round"/></svg>';
 
-export function createToyUI(app, W) {
+// paint: an optional recolour applied to the CSS and the markup (the Claude look passes warmCss)
+export function createToyUI(app, W, {paint = (x) => x} = {}) {
   const st = document.createElement('style');
-  st.textContent = CSS;
+  st.textContent = paint(CSS);
   document.head.appendChild(st);
   const el = document.createElement('div');
   el.className = 'wt';
@@ -152,6 +182,7 @@ export function createToyUI(app, W) {
     <div class="stat"><span class="pillg" data-k="dStat"></span><span data-k="dStatText"></span></div>
     <div class="pgr"><div class="pb"><i data-k="dBar"></i></div><span data-k="dProg"></span></div>
     <div class="rows" data-k="dRows"></div>
+    <div data-k="dExtra"></div>
   </div>
   <div class="card trk">
     <div class="l"><div class="hd">${ICONS.truck}<span style="margin:0;font-size:15.5px;color:#0f1730;font-weight:800" data-k="tTitle"></span><span data-k="tMeta"></span></div>
@@ -163,6 +194,7 @@ export function createToyUI(app, W) {
   <div class="tags" data-k="tags"></div>
   <div class="ring" data-k="ring"></div>
   <div class="cur" data-k="cur">${CURSOR}</div>`;
+  el.innerHTML = paint(el.innerHTML);
   app.appendChild(el);
   const q = (k) => el.querySelector(`[data-k="${k}"]`);
   const set = (k, v) => {
@@ -211,13 +243,20 @@ export function createToyUI(app, W) {
       set('dStatText', c.statText);
       q('dBar').style.width = `${(100 * c.prog).toFixed(1)}%`;
       set('dProg', c.progText);
-      html('dRows', c.rows.map(([k, v, ln]) => `<div class="rw"><span>${k}</span><span${ln ? ' class="ln"' : ''}>${v}</span></div>`).join(''));
+      html('dRows', (c.rows ?? []).map(([k, v, ln]) => `<div class="rw"><span>${k}</span><span${ln ? ' class="ln"' : ''}>${v}</span></div>`).join(''));
+      // a depot card: a 2x2 stat grid, an inventory list and the forklift fleet in place of the rows
+      q('dBar').parentElement.parentElement.style.display = c.stats ? 'none' : '';
+      let ex = '';
+      if (c.stats) ex += `<div class="sg">${c.stats.map(([k, v, of, p, g]) => `<div class="sb"><small>${k}</small><b>${v}${of ? ` <em>${of}</em>` : ''}</b>${p == null ? '' : `<div class="pb${g ? ' g' : ''}"><i style="width:${(100 * p).toFixed(1)}%"></i></div>`}</div>`).join('')}</div>`;
+      if (c.inv) ex += `<div class="ih">Inventory<span>units</span></div>` + c.inv.map(([ic, name, n, tag, cls]) => `<div class="iv"><i style="background:${INV_BG[ic] ?? '#eef2fb'}">${INV[ic] ?? ''}</i><span>${name}</span><b>${n}</b><span class="tg ${cls}">${tag}</span></div>`).join('');
+      if (c.fleet) ex += `<div class="fl"><div class="fh">${c.fleet.title}<span>${c.fleet.meta}</span></div>${c.fleet.rows.map(([id, txt, p]) => `<div class="fr"><b>${id}</b><span>${txt}</span><div class="pb"><i style="width:${(100 * p).toFixed(0)}%"></i></div><span>${Math.round(100 * p)}%</span></div>`).join('')}</div>`;
+      html('dExtra', paint(ex));
       q('det').style.transform = `translateY(${((1 - c.pop) * 10).toFixed(1)}px)`;
       q('det').style.opacity = (0.25 + 0.75 * c.pop).toFixed(3);
       const t = s.track;
       set('tTitle', t.title);
       set('tMeta', t.meta);
-      html('steps', `<div class="fl" style="width:calc((100% - 60px) * ${t.fill.toFixed(3)})"></div>` + t.steps.map(([n, tm, ic, stt]) => `<div class="st ${stt || 'fut'}"><b>${stt === 'on' ? STEP_IC.check : stt === 'done' ? STEP_IC[ic] : greyIc(ic)}</b>${n}<small>${tm}</small></div>`).join(''));
+      html('steps', paint(`<div class="fl" style="width:calc((100% - 60px) * ${t.fill.toFixed(3)})"></div>` + t.steps.map(([n, tm, ic, stt]) => `<div class="st ${stt || 'fut'}"><b>${stt === 'on' ? STEP_IC.check : stt === 'done' ? STEP_IC[ic] : greyIc(ic)}</b>${n}<small>${tm}</small></div>`).join('')));
       thumb('sThumb', t.ship.thumb);
       set('sId', t.ship.id);
       set('sTo', t.ship.to);
@@ -227,7 +266,7 @@ export function createToyUI(app, W) {
       const tb = s.table;
       html('seg', tb.tabs.map(([n, k], i) => `<span${i === tb.active ? ' class="a"' : ''}>${n}<em>${k}</em></span>`).join(''));
       set('tSite', tb.site);
-      html('rows', tb.rows.map((r) => `<div class="tr"><div><b>${r.id}</b><small>${r.org}</small></div><div class="wh"><i style="background:${r.dot}"></i>${r.where}</div><div><span class="pillg ${r.cls}" style="font-size:12px;padding:4px 10px">${r.stat}</span></div><div class="pp">${r.p == null ? r.pt : `<div class="pb"><i style="width:${r.p}%"></i></div>${r.pt}`}</div><span style="color:#0f1730">›</span></div>`).join(''));
+      html('rows', paint(tb.rows.map((r) => `<div class="tr"><div><b>${r.id}</b><small>${r.org}</small></div><div class="wh"><i style="background:${r.dot}"></i>${r.where}</div><div><span class="pillg ${r.cls}" style="font-size:12px;padding:4px 10px">${r.stat}</span></div><div class="pp">${r.p == null ? r.pt : `<div class="pb"><i style="width:${r.p}%"></i></div>${r.pt}`}</div><span style="color:#0f1730">›</span></div>`).join('')));
       const d = s.drop ?? {open: 0, sites: []};
       const dr = q('drop');
       dr.style.opacity = d.open.toFixed(3);

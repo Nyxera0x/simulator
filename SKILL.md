@@ -44,6 +44,23 @@ D6, a jet is pushed back and taxis out, a catering truck lifts its box to a door
 node "$SKILL_DIR/sims/build.mjs" airport-film      # → simulator-out/dist/airport-film.html, offline
 ```
 
+## Three more systems on the same kit
+
+Each one reuses the airport's look, stage, UI, selection marks and thumbnails, and adds its own models, world, film
+and score. Copy the one closest to your system.
+
+| System | Folder | Story | Length |
+|---|---|---|---|
+| **Plantline**, a car plant | `plant-shared/`, `plant-film/`, `plant-collide/` | `line.js` (robot arm with analytic IK and 4 tools, a car body that builds, paints and gets its wheels, skid, conveyor, press, paint booth, rolling road) and `plant.js` (open-top hall, AGVs, parts racks, car carrier, cell fences). One body from cell C4 to the carrier. `runToyPlantFilm({look: 'claude'})` gives the clay version. | 50 s |
+| **Buildline**, a construction site | `site-shared/`, `site-film/`, `site-collide/` | `machines.js` (excavator with `reach()`, tipper, mixer with a swinging chute and a pour stream, dozer, loader, roller, flatbed) and `site.js` (a pit heightfield that digs itself as a function of k, rebar, formwork, a slab that spreads from the chute, blockwork, batching plant). One mixer from the plant to the pour. Nothing above 9 m. | 43.7 s |
+| **Stockline**, a warehouse network | `warehouse-shared/`, `warehouse-film/`, `warehouse-collide/` | Built from the airport kit alone: three cargo terminals named per site, trucks reversing into docks, forklifts on keyed routes between the trucks and the staging rows, chargers. The detail card shows a depot's stat grid, inventory and forklift fleet. | 39.4 s |
+
+Give every system its own length (somewhere in 38-52 s, never a round number) and uneven gaps between the clicks, so
+a series never reads as one template.
+
+**Keep everything low.** A camera at 36 degrees over tall frames (quay cranes, gantries, portals, tower cranes) sees
+the frames, not the work. Choose systems whose action happens on the ground, or keep the one tall thing to the side.
+
 ## Building a new system
 
 1. **Take the reference apart.** Frames every 3 s at full size, a contact sheet. Write down the camera (does it cut,

@@ -1,4 +1,4 @@
-// The reference's selection marks for the toy airport: a thin blue wireframe box round the
+// the reference's selection marks for the toy airport: a thin blue wireframe box round the
 // selected vehicle, a soft blue glow on the ground under it, and a route drawn on the ground from it to where it is
 // going. All screen-space lines (2 px whatever the zoom), all driven per frame, all a pure function of what is set.
 //

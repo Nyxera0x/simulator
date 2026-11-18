@@ -1,4 +1,5 @@
-// The toy airport's shared look: the airport rebuilt as close to the reference video as we can get. Toy proportions with a premium finish: chunky bevelled forms, matte paint
+// The toy airport's shared look: the airport rebuilt as close to the reference video as we can get
+//. Toy proportions with a premium finish: chunky bevelled forms, matte paint
 // with a soft clearcoat on the vehicles, blue + white on a lavender ground, yellow only on the work machines, green
 // lollipop trees. Every builder in airside.js and gse.js takes its colours and materials from here, so the two kits
 // read as one world. Colours sampled from the reference frames.
@@ -91,8 +92,8 @@ export function labelTexture(text, {color = TOY.blue, bg = null, w = 1024, h = 2
   return t;
 }
 
-/** the stage tuned to the reference: neutral tone mapping (ACES greys a pale lavender
- *  ground out), lavender all round, softer sun, wide soft shadows */
+/** the stage tuned to the reference: neutral tone mapping (ACES greys a pale lavender ground out), lavender all round,
+ *  softer sun, wide soft shadows */
 export function createToyStage(canvas, {fov = 28} = {}) {
   const st = createMapStage(canvas, {bg: TOY.bg, fov});
   st.scene.fog.near = 700;

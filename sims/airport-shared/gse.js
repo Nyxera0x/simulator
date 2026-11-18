@@ -1,4 +1,5 @@
-// Toy airport ground vehicles, built to look like the reference video's trucks and forklifts: toy proportions at about 1.5x real, chunky bevelled bodies,
+// Toy airport ground vehicles, built to look like the reference video trucks and forklifts
+//: toy proportions at about 1.5x real, chunky bevelled bodies,
 // matte paint with a soft clearcoat, dark tyres with light hubs and a dark cap, dark glass, crisp printed liveries.
 // Blue + white everywhere, teal for the Kestrel livery, yellow only on the work machines (forklift, belt-loader boom,
 // high-loader lifts). Colours and materials come from ./style.js; the few colours it has no entry for are in GSE_COLORS.
